@@ -7,6 +7,7 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 volatile int master_count = 0;
 volatile byte INTFLAG1 = 0;
+int PosPan = 0;
 int panel_resolution = 600; 
 
 void setup() {
@@ -18,11 +19,11 @@ void setup() {
 }
 
 void loop() {
-  if (INTFLAG1)   {
+  if (INTFLAG1){
     Serial.println(master_count);
-    master_count = master_count / panel_resolution;
-    UpdatetoMaster(String(setEncoder), String(master_count));
-   delay(500);
+    PosPan = abs((master_count) / panel_resolution);
+    UpdatetoMaster(String(setEncoder), String(PosPan));
+    delay(500);
     INTFLAG1 = 0;
   }
 }
