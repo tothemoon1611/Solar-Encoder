@@ -70,3 +70,5 @@ const char StreamCmd = 0x09;
 
 /*--------------------UPDATE ENCODER TO MASTER ------------------------------*/
 const char setEncoder = 0x60;
+//-------------------- UPDATE MASTER TO ENCODER----------------------------------// 
+const char ResetEncoder = 0x61 ;

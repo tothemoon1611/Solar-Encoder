@@ -15,17 +15,28 @@ void setup() {
   pinMode(CHB, INPUT);
   Serial.begin(9600);
   MasterSerial.begin(9600);
-  attachInterrupt(0, flag, RISING);
+  attachInterrupt(0, flag, RISING || FALLING);
 }
 
 void loop() {
   if (INTFLAG1){
     Serial.println(master_count);
-    PosPan = abs((master_count) / panel_resolution);
+    PosPan = ((master_count) / panel_resolution);
+    
     UpdatetoMaster(String(setEncoder), String(PosPan));
     delay(500);
     INTFLAG1 = 0;
   }
+  if(MasterSerial.available())
+    {
+      const char DataRcv = (const char)Serial.read() ;
+      if(DataRcv == ResetEncoder) 
+        {
+          master_count = 0 ;
+          PosPan = 0 ;
+          INTFLAG1 = 0 ;
+        }
+    }
 }
 
 void UpdatetoMaster(String Command, String data) {
