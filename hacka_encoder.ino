@@ -5,10 +5,18 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 #include "command.h"
 
-volatile int master_count = 0;
-volatile byte INTFLAG1 = 0;
+int master_count = 0;
+byte INTFLAG1 = 0;
 int PosPan = 0;
 int panel_resolution = 600; 
+
+bool SerialRecv_MasterSerial = false;
+int serial_counter_MasterSerial = 0;
+char cmd_MasterSerial;
+String InputString_MasterSerial = "";
+boolean StringComplete_MasterSerial = false;
+
+void Get_Serial_Master() ;
 
 void setup() {
   pinMode(CHA, INPUT);
@@ -21,21 +29,24 @@ void setup() {
 void loop() {
   if (INTFLAG1){
     Serial.println(master_count);
-    PosPan = ((master_count) / panel_resolution);
-    
-    UpdatetoMaster(String(setEncoder), String(PosPan));
+    PosPan = ((master_count) / panel_resolution);   
+    UpdatetoMaster(String(setEncoder), String(PosPan));   
     delay(500);
     INTFLAG1 = 0;
   }
-  if(MasterSerial.available())
+  Get_Serial_Master() ;
+  if (StringComplete_MasterSerial) 
     {
-      const char DataRcv = (const char)Serial.read() ;
-      if(DataRcv == ResetEncoder) 
-        {
-          master_count = 0 ;
-          PosPan = 0 ;
-          INTFLAG1 = 0 ;
+      Serial.println("sdfssjhdkafe") ;
+      if(cmd_MasterSerial == ResetEncoder)
+        { 
+          master_count = 0;
+          INTFLAG1 = 0;
+          PosPan = 0;
         }
+      cmd_MasterSerial = "" ;
+      InputString_MasterSerial = "";
+      StringComplete_MasterSerial = false; 
     }
 }
 
@@ -51,5 +62,25 @@ void flag() {
   }
   if (digitalRead(CHA) && digitalRead(CHB)) {
     master_count-- ;
+  }
+}
+
+
+void Get_Serial_Master() 
+{
+  if (MasterSerial.available())
+  {
+    Serial.println("Data Having") ;
+    char inChar_MasterSerial = (char)MasterSerial.read();
+    if (inChar_MasterSerial == Start) SerialRecv_MasterSerial = true;
+    if (inChar_MasterSerial == End)
+    {
+      SerialRecv_MasterSerial = false;
+      serial_counter_MasterSerial = 0;
+      StringComplete_MasterSerial = true;
+    }
+    if (SerialRecv_MasterSerial)  serial_counter_MasterSerial++;
+    if (serial_counter_MasterSerial == 2) cmd_MasterSerial = inChar_MasterSerial;
+    if (serial_counter_MasterSerial > 2) InputString_MasterSerial += inChar_MasterSerial;
   }
 }
