@@ -5,7 +5,7 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 #include "command.h"
 
-int master_count = 0;
+long master_count = 0;
 byte INTFLAG1 = 0;
 int PanPos = 0;
 int panel_resolution = 3000; 
@@ -82,7 +82,7 @@ void Get_Serial_Master()
         }
       if(cmd_MasterSerial == NextPanel)
         { 
-          master_count = (PanPos + 1)*panel_resolution ;
+          master_count = (PanPos)*panel_resolution ;
           INTFLAG1 = 0;
           
         }  
