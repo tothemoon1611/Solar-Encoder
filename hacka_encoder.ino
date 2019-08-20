@@ -7,8 +7,8 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 int master_count = 0;
 byte INTFLAG1 = 0;
-int PosPan = 0;
-int panel_resolution = 600; 
+int PanPos = 0;
+int panel_resolution = 3000; 
 
 bool SerialRecv_MasterSerial = false;
 int serial_counter_MasterSerial = 0;
@@ -29,30 +29,18 @@ void setup() {
 void loop() {
   if (INTFLAG1){
     Serial.println(master_count);
-    PosPan = ((master_count) / panel_resolution);   
-    UpdatetoMaster(String(setEncoder), String(PosPan));   
+    PanPos = ((master_count) / panel_resolution);   
+    UpdatetoMaster(String(setEncoder), String(PanPos));   
     delay(500);
     INTFLAG1 = 0;
   }
   Get_Serial_Master() ;
-  if (StringComplete_MasterSerial) 
-    {
-      Serial.println("sdfssjhdkafe") ;
-      if(cmd_MasterSerial == ResetEncoder)
-        { 
-          master_count = 0;
-          INTFLAG1 = 0;
-          PosPan = 0;
-        }
-      cmd_MasterSerial = "" ;
-      InputString_MasterSerial = "";
-      StringComplete_MasterSerial = false; 
-    }
 }
 
-void UpdatetoMaster(String Command, String data) {
+void UpdatetoMaster(String Command, String data) 
+{
   Serial.println(String(Start) + Command + data + String(End));
-                 MasterSerial.print(String(Start) + Command + data + String(End));
+  MasterSerial.print(String(Start) + Command + data + String(End));
 }
 
 void flag() {
@@ -83,4 +71,23 @@ void Get_Serial_Master()
     if (serial_counter_MasterSerial == 2) cmd_MasterSerial = inChar_MasterSerial;
     if (serial_counter_MasterSerial > 2) InputString_MasterSerial += inChar_MasterSerial;
   }
+  if (StringComplete_MasterSerial) 
+    {
+      Serial.println("Data Rcv") ;
+      if(cmd_MasterSerial == ResetEncoder)
+        { 
+          master_count = 0;
+          INTFLAG1 = 0;
+          PanPos = 0;
+        }
+      if(cmd_MasterSerial == NextPanel)
+        { 
+          master_count = (PanPos + 1)*panel_resolution ;
+          INTFLAG1 = 0;
+          
+        }  
+      cmd_MasterSerial = "" ;
+      InputString_MasterSerial = "";
+      StringComplete_MasterSerial = false; 
+    }
 }

@@ -72,3 +72,4 @@ const char StreamCmd = 0x09;
 const char setEncoder = 0x60;
 //-------------------- UPDATE MASTER TO ENCODER----------------------------------// 
 const char ResetEncoder = 0x61 ;
+const char NextPanel = 0x62 ;
