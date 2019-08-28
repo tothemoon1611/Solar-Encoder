@@ -5,10 +5,10 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 #include "command.h"
 
-long master_count = 0;
+long int master_count = 0;
 byte INTFLAG1 = 0;
 int PanPos = 0;
-int panel_resolution = 3000; 
+int panel_resolution = 1317;
 
 bool SerialRecv_MasterSerial = false;
 int serial_counter_MasterSerial = 0;
@@ -27,17 +27,20 @@ void setup() {
 }
 
 void loop() {
-  if (INTFLAG1){
+  if (INTFLAG1) {
     Serial.println(master_count);
-    PanPos = ((master_count) / panel_resolution);   
-    UpdatetoMaster(String(setEncoder), String(PanPos));   
+//    if( master_count > panel_resolution)
+//      {
+        PanPos = abs((master_count) / panel_resolution)+1;
+//      }
+    UpdatetoMaster(String(setEncoder), String(PanPos));
     delay(500);
     INTFLAG1 = 0;
   }
   Get_Serial_Master() ;
 }
 
-void UpdatetoMaster(String Command, String data) 
+void UpdatetoMaster(String Command, String data)
 {
   Serial.println(String(Start) + Command + data + String(End));
   MasterSerial.print(String(Start) + Command + data + String(End));
@@ -54,7 +57,7 @@ void flag() {
 }
 
 
-void Get_Serial_Master() 
+void Get_Serial_Master()
 {
   if (MasterSerial.available())
   {
@@ -71,23 +74,22 @@ void Get_Serial_Master()
     if (serial_counter_MasterSerial == 2) cmd_MasterSerial = inChar_MasterSerial;
     if (serial_counter_MasterSerial > 2) InputString_MasterSerial += inChar_MasterSerial;
   }
-  if (StringComplete_MasterSerial) 
+  if (StringComplete_MasterSerial)
+  {
+    Serial.println("Data Rcv") ;
+    if (cmd_MasterSerial == ResetEncoder)
     {
-      Serial.println("Data Rcv") ;
-      if(cmd_MasterSerial == ResetEncoder)
-        { 
-          master_count = 0;
-          INTFLAG1 = 0;
-          PanPos = 0;
-        }
-      if(cmd_MasterSerial == NextPanel)
-        { 
-          master_count = (PanPos)*panel_resolution ;
-          INTFLAG1 = 0;
-          
-        }  
-      cmd_MasterSerial = "" ;
-      InputString_MasterSerial = "";
-      StringComplete_MasterSerial = false; 
+      master_count = 0;
+      INTFLAG1 = 0;
+      PanPos = 0;
     }
+    if (cmd_MasterSerial == NextPanel)
+    {
+      master_count = (PanPos) * panel_resolution ;
+      INTFLAG1 = 0;
+
+    }
+    InputString_MasterSerial = "";
+    StringComplete_MasterSerial = false;
+  }
 }
