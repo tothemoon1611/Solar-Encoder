@@ -8,7 +8,7 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 long int master_count = 0;
 byte INTFLAG1 = 0;
 int PanPos = 0;
-int panel_resolution = 1317;
+int panel_resolution = 1200;
 
 bool SerialRecv_MasterSerial = false;
 int serial_counter_MasterSerial = 0;
@@ -27,6 +27,7 @@ void setup() {
 }
 
 void loop() {
+  
   if (INTFLAG1) {
     Serial.println(master_count);
 //    if( master_count > panel_resolution)
@@ -39,6 +40,7 @@ void loop() {
   }
   Get_Serial_Master() ;
 }
+
 
 void UpdatetoMaster(String Command, String data)
 {
