@@ -5,8 +5,8 @@ SoftwareSerial MasterSerial(5, 4); // RX, TX
 
 #include "command.h"
 
-long int master_count = 0;
-byte INTFLAG1 = 0;
+volatile long int master_count = 0;
+volatile byte INTFLAG1 = 0;
 int PanPos = 0;
 int panel_resolution = 1200;
 
@@ -32,7 +32,7 @@ void loop() {
     Serial.println(master_count);
 //    if( master_count > panel_resolution)
 //      {
-        PanPos = abs((master_count) / panel_resolution)+1;
+          PanPos = abs((master_count) / panel_resolution)+1;
 //      }
     UpdatetoMaster(String(setEncoder), String(PanPos));
     delay(500);
@@ -52,9 +52,11 @@ void flag() {
   INTFLAG1 = 1;
   if (digitalRead(CHA) && !digitalRead(CHB)) {
     master_count++ ;
+    //thuan
   }
   if (digitalRead(CHA) && digitalRead(CHB)) {
     master_count-- ;
+    //nghich
   }
 }
 
